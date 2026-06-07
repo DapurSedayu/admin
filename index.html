@@ -332,7 +332,18 @@
 
             state.items = [];
             if(o.items) {
-                const parts = o.items.split(',');
+                let itemsText = o.items;
+                
+                // DETEKSI OTOMATIS MEREK DARI TAG PADA GOOGLE SHEET
+                if (itemsText.startsWith("[SEDAYU]")) {
+                    setBrand('sedayu');
+                    itemsText = itemsText.replace("[SEDAYU] ", ""); // Hapus tag agar tidak tercetak
+                } else if (itemsText.startsWith("[BLOOMS]")) {
+                    setBrand('blooms');
+                    itemsText = itemsText.replace("[BLOOMS] ", ""); // Hapus tag agar tidak tercetak
+                }
+
+                const parts = itemsText.split(',');
                 parts.forEach(p => {
                     const match = p.match(/(.*?)\(x(\d+)\)(?:\s*@(\d+))?/);
                     if(match) {
@@ -346,9 +357,9 @@
 
             const refEl = document.getElementById('order-reference-total');
             refEl.classList.remove('hidden');
-            refEl.innerText = `*Penting: Total acuan pesanan web adalah Rp ${o.total.toLocaleString('id-ID')}. Silakan sesuaikan harga satuan di bawah.`;
+            refEl.innerText = `*Penting: Total acuan pesanan web adalah Rp ${o.total.toLocaleString('id-ID')}. Silakan periksa kembali harga.`;
 
-            showNotification("Pesanan dimuat. Jangan lupa isi Harga Satuan barang!");
+            showNotification("Pesanan dimuat dan Merek telah disesuaikan!");
             updatePreview();
         }
 

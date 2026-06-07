@@ -392,8 +392,21 @@
 
         // Fungsi baru untuk mencetak dan menandai selesai
         async function processPrint() {
+            // --- MANIPULASI NAMA FILE PDF OTOMATIS ---
+            const originalTitle = document.title; // Simpan judul asli web
+            const brandName = state.brand === 'sedayu' ? 'DapurSedayu' : 'Bloomsbaloon';
+            
+            // Bersihkan nama pelanggan dari simbol aneh agar aman dijadikan nama file
+            const safeName = (state.custName || 'Pelanggan').replace(/[^a-zA-Z0-9 ]/g, "").trim(); 
+            
+            // Ubah judul tab web sementara waktu
+            document.title = `Invoice_${brandName}_${safeName}_${state.date}`;
+
             // 1. Lakukan print (Membuka dialog print browser)
             window.print();
+            
+            // Kembalikan judul web ke semula agar tidak terlihat aneh oleh admin
+            document.title = originalTitle;
             
             // 2. Jika ada pesanan yang ditarik dari sheet, tandai sebagai dicetak
             if (currentOrderRow) {
@@ -498,6 +511,32 @@
             
             let subtotal = 0;
 
+            // --- Logika Ukuran Tabel Dinamis (Menyesuaikan Jumlah Pesanan) ---
+            let pyClass = 'py-3';
+            let pxClass = 'px-4';
+            let textClass = 'text-sm';
+            
+            if (state.items.length > 15) {
+                // Sangat Banyak: Ukuran super kecil dan sangat rapat
+                pyClass = 'py-0.5'; 
+                pxClass = 'px-2';
+                textClass = 'text-[10px]'; 
+            } else if (state.items.length > 8) {
+                // Sedang/Banyak: Ukuran kecil dan rapat
+                pyClass = 'py-1.5'; 
+                pxClass = 'px-3';
+                textClass = 'text-xs'; 
+            }
+
+            // Perbarui Header Tabel dengan ukuran dinamis
+            document.getElementById('inv-table-header').innerHTML = `
+                <th class="${pyClass} ${pxClass} font-bold ${textClass} rounded-tl-lg w-12 text-center">No</th>
+                <th class="${pyClass} ${pxClass} font-bold ${textClass}">Deskripsi Pesanan</th>
+                <th class="${pyClass} ${pxClass} font-bold ${textClass} text-center w-20">Qty</th>
+                <th class="${pyClass} ${pxClass} font-bold ${textClass} text-right w-32">Harga Satuan</th>
+                <th class="${pyClass} ${pxClass} font-bold ${textClass} text-right w-36 rounded-tr-lg">Total</th>
+            `;
+
             if (state.items.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-gray-400 text-sm italic border-b border-gray-100">Belum ada pesanan yang ditambahkan.</td></tr>`;
             } else {
@@ -514,12 +553,12 @@
                     `;
 
                     tbody.innerHTML += `
-                        <tr class="border-b border-gray-100">
-                            <td class="py-3 px-4 text-sm text-gray-600 text-center">${index + 1}</td>
-                            <td class="py-3 px-4 text-sm font-medium text-gray-800">${item.desc}</td>
-                            <td class="py-3 px-4 text-sm text-gray-600 text-center">${item.qty}</td>
-                            <td class="py-3 px-4 text-sm text-gray-600 text-right">${formatIDR(item.price)}</td>
-                            <td class="py-3 px-4 text-sm font-bold text-gray-800 text-right">${formatIDR(rowTotal)}</td>
+                        <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                            <td class="${pyClass} ${pxClass} ${textClass} text-gray-600 text-center align-top">${index + 1}</td>
+                            <td class="${pyClass} ${pxClass} ${textClass} font-medium text-gray-800 leading-tight align-top">${item.desc}</td>
+                            <td class="${pyClass} ${pxClass} ${textClass} text-gray-600 text-center align-top">${item.qty}</td>
+                            <td class="${pyClass} ${pxClass} ${textClass} text-gray-600 text-right align-top">${formatIDR(item.price)}</td>
+                            <td class="${pyClass} ${pxClass} ${textClass} font-bold text-gray-800 text-right align-top">${formatIDR(rowTotal)}</td>
                         </tr>
                     `;
                 });

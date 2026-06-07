@@ -52,9 +52,17 @@
             
             <!-- TARIK DATA DARI SPREADSHEET -->
             <div class="space-y-3 bg-blue-50 p-4 rounded-xl border border-blue-100">
-                <label class="text-xs font-bold text-blue-800 uppercase tracking-wider block">Integrasi Pesanan Web</label>
+                <div class="flex justify-between items-center">
+                    <label class="text-xs font-bold text-blue-800 uppercase tracking-wider block">Pesanan Web</label>
+                    <select id="filter-status" onchange="renderOrderList()" class="text-xs border-blue-200 rounded p-1 text-blue-800 font-bold outline-none cursor-pointer">
+                        <option value="Baru">Belum Dicetak</option>
+                        <option value="Dicetak">Sudah Dicetak</option>
+                        <option value="Semua">Tampilkan Semua</option>
+                    </select>
+                </div>
+                
                 <button onclick="fetchOrders()" id="btn-fetch" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2.5 rounded-lg flex items-center justify-center gap-2 transition shadow-sm">
-                    <i data-lucide="cloud-download" class="w-4 h-4"></i> Tarik Pesanan Baru
+                    <i data-lucide="cloud-download" class="w-4 h-4"></i> Tarik / Segarkan Data
                 </button>
                 <select id="order-selector" class="w-full p-2.5 text-sm border border-blue-200 rounded-lg bg-white hidden font-medium outline-none focus:ring-2 focus:ring-blue-500" onchange="loadOrder(this.value)">
                     <option value="">Pilih Pesanan Masuk...</option>
@@ -146,8 +154,8 @@
         </div>
 
         <div class="p-5 border-t border-gray-200 bg-white">
-            <button onclick="window.print()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-green-200 transition-all active:scale-[0.98]">
-                <i data-lucide="printer" class="w-5 h-5"></i> Cetak / Simpan PDF
+            <button onclick="processPrint()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-green-200 transition-all active:scale-[0.98]">
+                <i data-lucide="printer" class="w-5 h-5"></i> Cetak & Tandai Selesai
             </button>
         </div>
     </div>
@@ -259,7 +267,8 @@
         };
 
         let state = { brand: 'sedayu', invNo: '', date: '', dueDate: '', custName: '', custPhone: '', custAddress: '', fee: 0, discount: 0, items: [] };
-        let remoteOrders = [];
+        let remoteOrders = []; // Menyimpan semua data mentah dari google sheet
+        let currentOrderRow = null; // Menyimpan ID/Baris pesanan yang sedang aktif
 
         const formatIDR = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
         const formatDate = (dateStr) => {
@@ -294,20 +303,13 @@
                 const res = await fetch(`${API_URL}?action=getOrders`);
                 remoteOrders = await res.json();
                 
-                const selector = document.getElementById('order-selector');
-                selector.innerHTML = '<option value="">Pilih Pesanan Masuk...</option>';
+                renderOrderList(); // Pisahkan proses render list agar bisa difilter
                 
-                remoteOrders.forEach((o, i) => {
-                    const d = new Date(o.timestamp).toLocaleDateString('id-ID');
-                    selector.innerHTML += `<option value="${i}">${d} - ${o.nama}</option>`;
-                });
-                
-                selector.classList.remove('hidden');
-                btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Data Berhasil Ditarik`;
-                showNotification("Berhasil menarik data pesanan dari Google Sheet!");
+                btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Data Terkini!`;
+                showNotification("Berhasil menarik data pesanan terbaru!");
                 
                 setTimeout(() => {
-                    btn.innerHTML = `<i data-lucide="cloud-download" class="w-4 h-4"></i> Tarik Ulang Data`;
+                    btn.innerHTML = `<i data-lucide="cloud-download" class="w-4 h-4"></i> Tarik / Segarkan Data`;
                     lucide.createIcons();
                 }, 2500);
 
@@ -318,9 +320,34 @@
             lucide.createIcons();
         }
 
+        // Fungsi baru untuk merender list berdasarkan filter
+        function renderOrderList() {
+            const filter = document.getElementById('filter-status').value;
+            const selector = document.getElementById('order-selector');
+            selector.innerHTML = '<option value="">Pilih Pesanan Masuk...</option>';
+            
+            let count = 0;
+            remoteOrders.forEach((o, i) => {
+                const status = o.status || 'Baru';
+                
+                if (filter === 'Semua' || filter === status) {
+                    const d = new Date(o.timestamp).toLocaleDateString('id-ID');
+                    const icon = status === 'Dicetak' ? '✓ ' : '';
+                    selector.innerHTML += `<option value="${i}">${icon}${d} - ${o.nama}</option>`;
+                    count++;
+                }
+            });
+            
+            selector.classList.remove('hidden');
+            if (count === 0) {
+                selector.innerHTML = `<option value="">Tidak ada pesanan di kategori ini</option>`;
+            }
+        }
+
         function loadOrder(index) {
-            if (index === "") return;
+            if (index === "") { currentOrderRow = null; return; }
             const o = remoteOrders[index];
+            currentOrderRow = o.rowNum; // Simpan nomor baris untuk diupdate nanti
             
             document.getElementById('input-cust-name').value = o.nama;
             document.getElementById('input-cust-phone').value = o.nomor_hp;
@@ -359,8 +386,35 @@
             refEl.classList.remove('hidden');
             refEl.innerText = `*Penting: Total acuan pesanan web adalah Rp ${o.total.toLocaleString('id-ID')}. Silakan periksa kembali harga.`;
 
-            showNotification("Pesanan dimuat dan Merek telah disesuaikan!");
+            showNotification(`Pesanan ${o.nama} dimuat. Merek disesuaikan!`);
             updatePreview();
+        }
+
+        // Fungsi baru untuk mencetak dan menandai selesai
+        async function processPrint() {
+            // 1. Lakukan print (Membuka dialog print browser)
+            window.print();
+            
+            // 2. Jika ada pesanan yang ditarik dari sheet, tandai sebagai dicetak
+            if (currentOrderRow) {
+                showNotification("Sedang menandai pesanan sebagai 'Selesai/Dicetak' di Google Sheet...");
+                try {
+                    // Update ke Google Sheet
+                    await fetch(`${API_URL}?action=markPrinted&row=${currentOrderRow}`);
+                    
+                    // Update data lokal agar langsung hilang dari dropdown "Baru"
+                    const orderToUpdate = remoteOrders.find(o => o.rowNum === currentOrderRow);
+                    if(orderToUpdate) orderToUpdate.status = 'Dicetak';
+                    
+                    renderOrderList(); // Segarkan dropdown
+                    document.getElementById('order-selector').value = ""; // Reset pilihan
+                    currentOrderRow = null;
+                    
+                    showNotification("Pesanan berhasil ditandai selesai!", "success");
+                } catch (e) {
+                    console.error("Gagal update status:", e);
+                }
+            }
         }
 
         function setBrand(brandKey) {

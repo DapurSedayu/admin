@@ -50,7 +50,6 @@
 
     <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 w-[90%] max-w-sm pointer-events-none"></div>
 
-    <!-- SIDEBAR CONTROLS -->
     <div id="sidebar-controls" class="w-full md:w-[450px] bg-white shadow-2xl h-[calc(100vh-60px)] md:h-full flex flex-col z-20 border-r border-gray-200">
         
         <div class="p-4 border-b border-gray-100 flex items-center justify-between bg-slate-900 text-white shrink-0">
@@ -316,7 +315,6 @@
                 </button>
             </div>
             <div id="chat-contact-list" class="flex-1 overflow-y-auto">
-                <!-- Data pelanggan dari Firebase -->
                 <div class="p-8 text-center text-gray-400 italic text-sm">Menghubungkan ke server chat...</div>
             </div>
         </div>
@@ -561,7 +559,7 @@
             btnBlooms.className = "p-3 border-2 border-transparent bg-gray-50 rounded-xl flex flex-col items-center gap-2 transition-all hover:bg-pink-50 cursor-pointer";
             
             if (iconSedayu) { iconSedayu.classList.remove('text-orange-600'); iconSedayu.classList.add('text-gray-400'); }
-            if (iconBlooms) { iconBlooms.classList.remove('text-pink-600'); iconBlooms.classList.add('text-gray-400'); }
+            if (iconBlooms) { iconBlooms.classList.remove('text-gray-400'); iconBlooms.classList.add('text-pink-600'); }
 
             if (brandKey === 'sedayu') {
                 btnSedayu.classList.replace('border-transparent', 'border-orange-500');
@@ -704,38 +702,39 @@
     <!-- FIREBASE ADMIN CHAT LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"
         import { getFirestore, collection, onSnapshot, doc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"
 
-        let firebaseConfig = { projectId: "demo-project" }
-        try { if (typeof __firebase_config !== 'undefined') firebaseConfig = JSON.parse(__firebase_config) } catch(e) {}
+        const firebaseConfig = {
+            apiKey: "AIzaSyCXybR3C-tTdDYe8Hp0mLS5LEsJl3_i4rg",
+            authDomain: "sedayu-hub.firebaseapp.com",
+            projectId: "sedayu-hub",
+            storageBucket: "sedayu-hub.firebasestorage.app",
+            messagingSenderId: "1056611525373",
+            appId: "1:1056611525373:web:ea75fdf540c5573468d494"
+        };
         
         const app = initializeApp(firebaseConfig)
         const auth = getAuth(app)
         const db = getFirestore(app)
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'sedayu-hub'
+        const appId = 'sedayu-hub'
 
         let currentChatId = null
         let unsubscribeMessages = null
         let isAuthReady = false
 
-        // Auth initialization wajib dilakukan sebelum query Firestore
         const initAuth = async () => {
             try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token)
-                } else {
-                    await signInAnonymously(auth)
-                }
+                await signInAnonymously(auth)
                 isAuthReady = true
-                window.initChatAdmin() // Mulai listener setelah auth selesai
+                window.initChatAdmin() 
             } catch (error) {
                 console.error("Auth error:", error)
             }
         }
 
         window.initChatAdmin = () => {
-            if (!isAuthReady) return // Guard check
+            if (!isAuthReady) return 
             const chatsRef = collection(db, 'artifacts', appId, 'public', 'data', 'chats')
             
             onSnapshot(chatsRef, (snapshot) => {
@@ -774,7 +773,7 @@
             document.getElementById('btn-admin-reply').disabled = false
 
             if (unsubscribeMessages) unsubscribeMessages()
-            if (!isAuthReady) return // Guard check
+            if (!isAuthReady) return 
             
             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'chats', id)
             unsubscribeMessages = onSnapshot(docRef, (docSnap) => {
@@ -798,7 +797,7 @@
         }
 
         window.sendAdminReply = async () => {
-            if (!isAuthReady) return // Guard check
+            if (!isAuthReady) return 
             const input = document.getElementById('admin-chat-input')
             const text = input.value.trim()
             if (!text || !currentChatId) return
@@ -820,7 +819,6 @@
             if (e.key === 'Enter') window.sendAdminReply()
         })
 
-        // Inisialisasi Firebase Auth saat halaman dimuat
         initAuth()
     </script>
 </body>

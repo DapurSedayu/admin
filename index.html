@@ -12,13 +12,11 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
         
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        /* A4 Paper Setup */
         .a4-paper {
             width: 210mm;
             min-height: 297mm;
@@ -30,11 +28,10 @@
             flex-shrink: 0;
         }
 
-        /* Print Mode */
         @media print {
             @page { size: A4; margin: 0; }
             body { background: white; margin: 0; padding: 0; overflow: visible; }
-            #sidebar-controls, #mobile-nav, #toast-container { display: none !important; }
+            #sidebar-controls, #mobile-nav, #toast-container, #chat-app-container { display: none !important; }
             #preview-container {
                 display: block !important; width: 100% !important; padding: 0 !important; margin: 0 !important;
                 background: white; overflow: visible !important; height: auto !important;
@@ -43,10 +40,8 @@
             .print-hidden { display: none !important; }
         }
 
-        /* Dynamic Table Scaling Classes */
         .table-compact th, .table-compact td { padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; font-size: 0.75rem !important; }
         
-        /* Toast Animation */
         @keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .toast-enter { animation: slideDown 0.3s forwards; }
     </style>
@@ -58,18 +53,18 @@
     <!-- SIDEBAR CONTROLS -->
     <div id="sidebar-controls" class="w-full md:w-[450px] bg-white shadow-2xl h-[calc(100vh-60px)] md:h-full flex flex-col z-20 border-r border-gray-200">
         
-        <!-- Header -->
         <div class="p-4 border-b border-gray-100 flex items-center justify-between bg-slate-900 text-white shrink-0">
             <h2 class="font-bold text-lg flex items-center gap-2">
                 <div class="bg-blue-500 p-1.5 rounded-lg"><i data-lucide="layout-dashboard" class="w-5 h-5"></i></div>
                 Dasbor Admin
             </h2>
+            <button onclick="document.getElementById('chat-app-container').classList.remove('hidden')" class="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1 shadow-md">
+                <i data-lucide="message-square" class="w-4 h-4"></i> Chat Pelanggan
+            </button>
         </div>
         
-        <!-- Scrollable Content -->
         <div class="flex-1 overflow-y-auto p-4 space-y-6 pb-24 md:pb-6">
             
-            <!-- SECTION 1: Integrasi Pesanan -->
             <div class="space-y-3 bg-blue-50/50 p-4 rounded-xl border border-blue-100 shadow-sm">
                 <div class="flex items-center justify-between mb-1">
                     <label class="text-xs font-black text-blue-800 uppercase tracking-wider flex items-center gap-1"><i data-lucide="inbox" class="w-4 h-4"></i> Pesanan Masuk</label>
@@ -92,7 +87,6 @@
                 </div>
             </div>
 
-            <!-- SECTION 2: Manajemen Produk/Menu -->
             <div class="space-y-3 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                 <label class="text-xs font-black text-gray-700 uppercase tracking-wider flex items-center gap-1"><i data-lucide="package" class="w-4 h-4 text-gray-500"></i> Kelola Menu & Harga Web</label>
                 <select id="product-selector" class="w-full p-3 text-sm border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all cursor-pointer font-medium" onchange="loadProductDetails(this.value)">
@@ -120,7 +114,6 @@
                 </div>
             </div>
 
-            <!-- SECTION 3: Merek Cetak -->
             <div class="space-y-3">
                 <label class="text-xs font-black text-gray-700 uppercase tracking-wider block">Merek Faktur</label>
                 <div class="grid grid-cols-2 gap-3">
@@ -135,7 +128,6 @@
                 </div>
             </div>
 
-            <!-- SECTION 4: Detail Invoice & Pelanggan -->
             <div class="space-y-3 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                 <label class="text-xs font-black text-gray-700 uppercase tracking-wider flex items-center gap-1"><i data-lucide="user" class="w-4 h-4 text-gray-500"></i> Data Pelanggan</label>
                 <div class="grid grid-cols-2 gap-3">
@@ -164,14 +156,11 @@
                 </div>
             </div>
 
-            <!-- SECTION 5: Daftar Item -->
             <div class="space-y-3">
                 <label class="text-xs font-black text-gray-700 uppercase tracking-wider flex items-center gap-1"><i data-lucide="shopping-bag" class="w-4 h-4 text-gray-500"></i> Rincian Pesanan</label>
                 
-                <!-- Daftar Item Dinamis -->
                 <div id="item-editor-list" class="space-y-2"></div>
                 
-                <!-- Tambah Item Manual -->
                 <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 border-dashed space-y-3">
                     <div class="grid grid-cols-12 gap-2">
                         <div class="col-span-12"><input type="text" id="new-item-desc" placeholder="Ketik Nama Barang Baru..." class="w-full p-2.5 text-sm border rounded-lg outline-none focus:border-gray-400"></div>
@@ -184,7 +173,6 @@
                 </div>
             </div>
 
-            <!-- SECTION 6: Diskon & Ongkir -->
             <div class="space-y-3 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                 <label class="text-xs font-black text-gray-700 uppercase tracking-wider block mb-1">Penyesuaian Biaya</label>
                 <div class="grid grid-cols-2 gap-3">
@@ -201,7 +189,6 @@
             
         </div>
         
-        <!-- Print Button Area -->
         <div class="p-4 border-t border-gray-200 bg-white shrink-0 hidden md:block">
             <button onclick="printAndMark()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-green-200 transition-all active:scale-[0.98]">
                 <i data-lucide="printer" class="w-5 h-5"></i> Cetak & Tandai Selesai
@@ -212,7 +199,6 @@
     <!-- PREVIEW CONTAINER -->
     <div id="preview-container" class="hidden md:flex flex-1 overflow-y-auto overflow-x-auto bg-gray-300 p-4 justify-center md:pb-10 pb-24 h-[calc(100vh-60px)] md:h-full">
         
-        <!-- Mobile Print Button -->
         <div class="w-full max-w-[210mm] mb-4 md:hidden print-hidden shrink-0">
             <button onclick="printAndMark()" class="w-full bg-green-600 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-lg">
                 <i data-lucide="printer" class="w-5 h-5"></i> Cetak / Simpan PDF
@@ -221,7 +207,6 @@
 
         <div class="a4-paper rounded-lg md:rounded-none" id="invoice-paper">
             
-            <!-- HEADER -->
             <div class="flex justify-between items-start border-b-2 pb-5 mb-6 transition-colors duration-300" id="inv-header-border">
                 <div class="flex items-center gap-4">
                     <img id="inv-logo" src="https://i.ibb.co.com/Xx4rz7Tb/WA-0815-8444-8308-1.png" alt="Logo" class="w-20 h-20 md:w-24 md:h-24 object-contain rounded-full shadow-sm border p-1 bg-white shrink-0">
@@ -240,7 +225,6 @@
                 </div>
             </div>
 
-            <!-- META DATA -->
             <div class="flex justify-between items-start mb-6">
                 <div class="w-1/2 pr-4">
                     <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Tagihan Kepada:</p>
@@ -256,7 +240,6 @@
                 </div>
             </div>
 
-            <!-- TABLE -->
             <div class="mb-6 min-h-[250px]">
                 <table class="w-full text-left border-collapse" id="invoice-table">
                     <thead>
@@ -272,7 +255,6 @@
                 </table>
             </div>
 
-            <!-- TOTALS -->
             <div class="flex justify-end mb-8">
                 <div class="w-2/3 md:w-1/2">
                     <div class="flex justify-between py-1.5 border-b border-gray-100">
@@ -294,7 +276,6 @@
                 </div>
             </div>
 
-            <!-- FOOTER -->
             <div class="mt-auto pt-6 border-t-2 border-gray-100 grid grid-cols-2 gap-6">
                 <div>
                     <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-1"><i data-lucide="credit-card" class="w-3 h-3"></i> Info Pembayaran</h4>
@@ -325,8 +306,42 @@
         </div>
     </div>
 
-    <!-- MOBILE BOTTOM NAV (TABS) -->
-    <div id="mobile-nav" class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 flex md:hidden z-50 h-[60px] pb-safe">
+    <!-- CHAT DASHBOARD OVERLAY -->
+    <div id="chat-app-container" class="hidden fixed inset-0 z-50 bg-white flex flex-col md:flex-row">
+        <div class="w-full md:w-1/3 border-r border-gray-200 flex flex-col bg-gray-50 h-1/2 md:h-full">
+            <div class="p-4 bg-slate-900 text-white flex justify-between items-center shrink-0">
+                <h3 class="font-bold flex items-center gap-2"><i data-lucide="message-circle" class="w-5 h-5"></i> Daftar Chat</h3>
+                <button onclick="document.getElementById('chat-app-container').classList.add('hidden')" class="text-xs bg-red-500 hover:bg-red-600 px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1">
+                    <i data-lucide="x" class="w-4 h-4"></i> Tutup
+                </button>
+            </div>
+            <div id="chat-contact-list" class="flex-1 overflow-y-auto">
+                <!-- Data pelanggan dari Firebase -->
+                <div class="p-8 text-center text-gray-400 italic text-sm">Menghubungkan ke server chat...</div>
+            </div>
+        </div>
+        
+        <div class="w-full md:w-2/3 flex flex-col bg-white h-1/2 md:h-full border-t md:border-t-0 border-gray-200">
+            <div id="chat-active-header" class="p-4 border-b border-gray-200 bg-white font-bold text-gray-800 shrink-0 flex items-center gap-3">
+                <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400"><i data-lucide="user" class="w-5 h-5"></i></div>
+                <span>Pilih obrolan pelanggan</span>
+            </div>
+            
+            <div id="chat-message-list" class="flex-1 overflow-y-auto p-4 flex flex-col gap-3 bg-[#e5ddd5] bg-opacity-30">
+                <!-- Pesan akan tampil di sini -->
+            </div>
+            
+            <div class="p-4 border-t border-gray-200 bg-white flex gap-2 shrink-0">
+                <input type="text" id="admin-chat-input" class="flex-1 bg-gray-100 border border-transparent rounded-full px-5 py-2.5 outline-none focus:border-green-500 focus:bg-white transition-all text-sm" placeholder="Ketik balasan Anda di sini..." disabled>
+                <button onclick="sendAdminReply()" id="btn-admin-reply" class="bg-green-500 text-white p-3 rounded-full hover:bg-green-600 transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i data-lucide="send" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MOBILE BOTTOM NAV -->
+    <div id="mobile-nav" class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 flex md:hidden z-40 h-[60px] pb-safe">
         <button onclick="switchTab('controls')" id="tab-controls" class="flex-1 flex flex-col items-center justify-center text-blue-600 bg-blue-50 transition-colors">
             <i data-lucide="edit-3" class="w-5 h-5 mb-0.5"></i>
             <span class="text-[10px] font-bold">Edit Data</span>
@@ -337,9 +352,7 @@
         </button>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
     <script>
-        // KODE KEAMANAN (ANTI-CRASH) & LOGIKA
         const API_URL = "https://script.google.com/macros/s/AKfycbw5n6RxBtmY46nwhN06K45uJAl0tFcL079Eh9YNYfZC_niVpJEtENDu4oPTK5CmOnUS/exec";
         
         const BRANDS = {
@@ -352,12 +365,10 @@
         let products = [];
         let currentSelectedRow = null; 
 
-        // Fungsi Helper (Aman dari null)
         const getVal = (id) => { const el = document.getElementById(id); return el ? el.value : ''; };
         const formatIDR = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num || 0);
         const formatDate = (dateStr) => { if (!dateStr) return '-'; return new Date(dateStr).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }); };
 
-        // INITIALIZATION
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             try {
@@ -373,7 +384,6 @@
             }
         });
 
-        // --- NOTIFIKASI ---
         function showNotification(msg) {
             const container = document.getElementById('toast-container');
             if(!container) return;
@@ -385,7 +395,6 @@
             setTimeout(() => { div.style.opacity = '0'; div.style.transform = 'translateY(-10px)'; div.style.transition = 'all 0.3s'; setTimeout(() => div.remove(), 300); }, 3000);
         }
 
-        // --- MOBILE TABS ---
         function switchTab(tabName) {
             const controls = document.getElementById('sidebar-controls');
             const preview = document.getElementById('preview-container');
@@ -405,7 +414,6 @@
             }
         }
 
-        // --- MANAJEMEN PRODUK ---
         async function fetchProducts() {
             const sel = document.getElementById('product-selector');
             if(sel) sel.innerHTML = '<option value="">Sedang memuat menu...</option>';
@@ -455,7 +463,6 @@
             if(btn) { btn.innerHTML = `<i data-lucide="save" class="w-4 h-4"></i> Simpan ke Web & Google Sheet`; lucide.createIcons(); }
         }
 
-        // --- MANAJEMEN PESANAN ---
         async function fetchOrders() {
             const btn = document.getElementById('btn-fetch');
             if(btn) { btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Menghubungkan...`; lucide.createIcons(); }
@@ -499,7 +506,6 @@
             const o = allRemoteOrders[index];
             currentSelectedRow = o.rowNum; 
 
-            // Deteksi Merek
             let detectedBrand = 'sedayu';
             if (o.items && o.items.includes('[BLOOMS]')) detectedBrand = 'blooms';
             setBrand(detectedBrand);
@@ -512,7 +518,6 @@
             if(document.getElementById('input-date')) document.getElementById('input-date').value = dateObj.toISOString().split('T')[0];
             if(document.getElementById('input-inv-no')) document.getElementById('input-inv-no').value = `INV-${dateObj.toISOString().split('T')[0].replace(/-/g, '')}-${Math.floor(Math.random()*1000)}`;
 
-            // Parse Items
             state.items = [];
             if(o.items) {
                 let cleanItems = o.items.replace(/\[SEDAYU\]\s*/g, '').replace(/\[BLOOMS\]\s*/g, '');
@@ -543,7 +548,6 @@
             else showNotification("Pesanan dimuat.");
         }
 
-        // --- EDITOR & PREVIEW ---
         function setBrand(brandKey) {
             state.brand = brandKey;
             const btnSedayu = document.getElementById('btn-brand-sedayu');
@@ -590,7 +594,6 @@
 
         function updatePreview() {
             try {
-                // Ambil Data Aman
                 state.invNo = getVal('input-inv-no') || '-';
                 state.date = getVal('input-date');
                 state.custName = getVal('input-cust-name') || 'Nama Pelanggan';
@@ -599,7 +602,6 @@
                 state.fee = parseInt(getVal('input-fee')) || 0;
                 state.discount = parseInt(getVal('input-discount')) || 0;
 
-                // Terapkan Tema
                 const brand = BRANDS[state.brand];
                 if(document.getElementById('inv-logo')) document.getElementById('inv-logo').src = brand.logo;
                 if(document.getElementById('inv-brand-name')) document.getElementById('inv-brand-name').textContent = brand.name;
@@ -612,14 +614,12 @@
                 if(document.getElementById('inv-total-box')) document.getElementById('inv-total-box').style.backgroundColor = brand.hexLight;
                 if(document.getElementById('preview-grandtotal')) document.getElementById('preview-grandtotal').style.color = brand.hexPrimary;
 
-                // Terapkan Teks
                 if(document.getElementById('preview-inv-no')) document.getElementById('preview-inv-no').textContent = state.invNo;
                 if(document.getElementById('preview-date')) document.getElementById('preview-date').textContent = formatDate(state.date);
                 if(document.getElementById('preview-cust-name')) document.getElementById('preview-cust-name').textContent = state.custName;
                 if(document.getElementById('preview-cust-phone')) document.getElementById('preview-cust-phone').textContent = state.custPhone;
                 if(document.getElementById('preview-cust-address')) document.getElementById('preview-cust-address').textContent = state.custAddress;
 
-                // Render Item
                 const editorList = document.getElementById('item-editor-list');
                 const tbody = document.getElementById('preview-item-tbody');
                 const invoiceTable = document.getElementById('invoice-table');
@@ -675,37 +675,153 @@
                 
                 if(document.getElementById('preview-grandtotal')) document.getElementById('preview-grandtotal').textContent = formatIDR(subtotal + state.fee - state.discount);
                 
-                lucide.createIcons();
             } catch(e) {
                 console.error("Error during updatePreview:", e);
             }
         }
 
-        // --- CETAK & TANDAI SELESAI ---
         async function printAndMark() {
-            // Naming PDF
             const originalTitle = document.title;
             const safeName = state.custName.replace(/[^a-zA-Z0-9 ]/g, "").trim() || "Pelanggan";
             const dateStr = state.date || new Date().toISOString().split('T')[0];
             const brandStr = state.brand === 'sedayu' ? 'DapurSedayu' : 'Bloomsbaloon';
             document.title = `Invoice_${brandStr}_${safeName}_${dateStr}`;
 
-            // Buka Jendela Print
             window.print();
-
-            // Kembalikan Judul
             document.title = originalTitle;
 
-            // Update Sheet ke "Dicetak"
             if (currentSelectedRow) {
                 try {
                     await fetch(`${API_URL}?action=markPrinted&row=${currentSelectedRow}`);
                     showNotification("Pesanan ditandai 'Sudah Dicetak'.");
-                    setTimeout(fetchOrders, 2000); // Tarik ulang data agar daftar pesanan bersih
+                    setTimeout(fetchOrders, 2000);
                     currentSelectedRow = null; 
                 } catch(e) { console.error(e); }
             }
         }
+    </script>
+
+    <!-- FIREBASE ADMIN CHAT LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"
+        import { getFirestore, collection, onSnapshot, doc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"
+
+        let firebaseConfig = { projectId: "demo-project" }
+        try { if (typeof __firebase_config !== 'undefined') firebaseConfig = JSON.parse(__firebase_config) } catch(e) {}
+        
+        const app = initializeApp(firebaseConfig)
+        const auth = getAuth(app)
+        const db = getFirestore(app)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'sedayu-hub'
+
+        let currentChatId = null
+        let unsubscribeMessages = null
+        let isAuthReady = false
+
+        // Auth initialization wajib dilakukan sebelum query Firestore
+        const initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token)
+                } else {
+                    await signInAnonymously(auth)
+                }
+                isAuthReady = true
+                window.initChatAdmin() // Mulai listener setelah auth selesai
+            } catch (error) {
+                console.error("Auth error:", error)
+            }
+        }
+
+        window.initChatAdmin = () => {
+            if (!isAuthReady) return // Guard check
+            const chatsRef = collection(db, 'artifacts', appId, 'public', 'data', 'chats')
+            
+            onSnapshot(chatsRef, (snapshot) => {
+                const chats = []
+                snapshot.forEach(doc => chats.push({ id: doc.id, ...doc.data() }))
+                chats.sort((a, b) => b.timestamp - a.timestamp)
+                
+                const list = document.getElementById('chat-contact-list')
+                if(chats.length === 0) {
+                    list.innerHTML = '<div class="p-8 text-center text-gray-400 italic text-sm">Belum ada obrolan</div>'
+                    return
+                }
+
+                list.innerHTML = chats.map(c => `
+                    <div onclick="openChatDetail('${c.id}', '${c.name || 'Pelanggan'}')" class="p-4 border-b border-gray-100 hover:bg-gray-100 cursor-pointer flex justify-between items-center transition-colors ${currentChatId === c.id ? 'bg-green-50' : ''}">
+                        <div class="overflow-hidden">
+                            <h4 class="font-bold text-sm text-gray-800">${c.name || 'Pelanggan'}</h4>
+                            <p class="text-xs text-gray-500 truncate max-w-[180px]">${c.lastMessage || 'Mengirim pesan...'}</p>
+                        </div>
+                        <span class="text-[10px] text-gray-400 ml-2 shrink-0">${new Date(c.timestamp).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})}</span>
+                    </div>
+                `).join('')
+                lucide.createIcons()
+            }, (error) => console.error("Snapshot error:", error))
+        }
+
+        window.openChatDetail = (id, name) => {
+            currentChatId = id
+            
+            const header = document.getElementById('chat-active-header')
+            header.innerHTML = `<div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600"><i data-lucide="user" class="w-5 h-5"></i></div> <div><h4 class="font-bold text-gray-800">${name}</h4><p class="text-[10px] text-gray-400">ID: ${id.substring(0,6)}</p></div>`
+            
+            const input = document.getElementById('admin-chat-input')
+            input.disabled = false
+            input.focus()
+            document.getElementById('btn-admin-reply').disabled = false
+
+            if (unsubscribeMessages) unsubscribeMessages()
+            if (!isAuthReady) return // Guard check
+            
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'chats', id)
+            unsubscribeMessages = onSnapshot(docRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data()
+                    const msgList = document.getElementById('chat-message-list')
+                    
+                    if (data.messages && data.messages.length > 0) {
+                        msgList.innerHTML = data.messages.map(m => `
+                            <div class="max-w-[80%] p-3 shadow-sm text-sm flex flex-col ${m.sender === 'admin' ? 'bg-green-500 text-white self-end rounded-xl rounded-tr-sm' : 'bg-white text-gray-800 border border-gray-100 self-start rounded-xl rounded-tl-sm'}">
+                                <span>${m.text}</span>
+                                <span class="text-[9px] mt-1 ${m.sender === 'admin' ? 'text-green-100 self-end' : 'text-gray-400 self-start'}">${new Date(m.time).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})}</span>
+                            </div>
+                        `).join('')
+                        msgList.scrollTop = msgList.scrollHeight
+                    }
+                }
+            }, (error) => console.error("Chat detail error:", error))
+            
+            lucide.createIcons()
+        }
+
+        window.sendAdminReply = async () => {
+            if (!isAuthReady) return // Guard check
+            const input = document.getElementById('admin-chat-input')
+            const text = input.value.trim()
+            if (!text || !currentChatId) return
+            
+            input.value = ''
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'chats', currentChatId)
+                await updateDoc(docRef, {
+                    lastMessage: text,
+                    timestamp: Date.now(),
+                    messages: arrayUnion({ sender: 'admin', text: text, time: Date.now() })
+                })
+            } catch (error) {
+                console.error("Gagal mengirim pesan:", error)
+            }
+        }
+
+        document.getElementById('admin-chat-input')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') window.sendAdminReply()
+        })
+
+        // Inisialisasi Firebase Auth saat halaman dimuat
+        initAuth()
     </script>
 </body>
 </html>

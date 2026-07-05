@@ -428,7 +428,8 @@
                 }
             } catch(e) { 
                 console.error(e);
-                if(sel) sel.innerHTML = '<option value="">Gagal Memuat. Cek Koneksi / URL</option>';
+                if(sel) sel.innerHTML = '<option value="">Akses ditolak. Cek izin Google Script.</option>';
+                showNotification("Gagal terhubung. Pastikan akses script diatur ke Anyone.");
             }
         }
 
@@ -455,7 +456,7 @@
                 showNotification("Perubahan Menu Berhasil Disimpan!");
                 fetchProducts(); 
             } catch(e) { 
-                showNotification("Gagal menyimpan ke Google Sheet."); 
+                showNotification("Gagal menyimpan ke Google Sheet. Cek izin akses."); 
             }
             
             if(btn) { btn.innerHTML = `<i data-lucide="save" class="w-4 h-4"></i> Simpan ke Web & Google Sheet`; lucide.createIcons(); }
@@ -478,7 +479,7 @@
             } catch (err) {
                 console.error(err);
                 if(btn) btn.innerHTML = `<i data-lucide="x" class="w-4 h-4"></i> Gagal Menarik Data`;
-                showNotification("Koneksi gagal. Pastikan Deploy sudah diperbarui.");
+                showNotification("Gagal menarik pesanan. Cek izin akses Google Script kamu.");
                 lucide.createIcons();
             }
         }
